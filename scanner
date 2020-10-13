@@ -1,0 +1,208 @@
+import re
+
+def get_next_state (start_state : int, character : str):
+    
+    end_state = 0
+    out = [False, "", False]
+    symbol_list = [";", ":", ",", "[", "]", "(", ")", "{", "}", "+", "-", "<"]
+    whitespace = [" ", "\n", "\t", "\r", "\f", "\v"] 
+     
+    if (character == "\n"):
+        out[2] = True
+    
+    if (start_state == 0):
+        if (re.match('[a-zA-Z]', character)):
+            end_state = 1
+        elif (re.match('[0-9]', character)):
+            end_state = 3
+        elif (character in symbol_list):
+            end_state = 5
+        elif (character == "="):
+            end_state = 6
+        elif (character == "*"):
+            end_state = 8
+        elif (character == "/"):
+            end_state = 10
+        elif (character in whitespace):
+            end_state = 15
+        else:
+            out[0] = True
+            out[1] = "Invalid input"
+            return out 
+    elif (start_state == 1):
+        if (re.match('[a-zA-Z0-9]', character)):
+            end_state = 1
+        elif (character not in (symbol_list + whitespace + ["=", "*", "/"])):
+            out[0] = True
+            out[1] = "Invalid input"
+            return out
+        else:
+            end_state = 2
+    elif (start_state == 3):
+        if (re.match('[0-9]', character)):
+            end_state = 3 
+        elif (character not in (symbol_list + whitespace + ["=", "*", "/"]) or re.match('[a-zA-Z]', character)):
+            out[0] = True
+            out[1] = "Invalid number"
+            return out
+        else:
+            end_state = 4
+    elif (start_state == 6):
+        if (character == "="):
+            end_state = 7
+        elif (character in (symbol_list + whitespace + ["=", "*", "/"]) or re.match('[a-zA-Z0-9]', character)):
+            end_state = 9
+        else:
+            out[0] = True
+            out[1] = "Invalid input"
+            return out
+    elif (start_state == 8):
+        if (character == "/"):
+            out[0] = True
+            out[1] = "Unmatched comment"
+            return out
+        elif (character in (symbol_list + whitespace + ["=", "*", "/"]) or re.match('[a-zA-Z0-9]', character)):
+            end_state = 9
+        else:
+            out[0] = True
+            out[1] = "Invalid input"
+            return out
+    elif (start_state == 10):
+        if (character == "/"):
+            end_state = 11
+        elif (character == "*"):
+            end_state = 13
+        else:
+            out[0] = True
+            out[1] = "Invalid input"
+            return out
+    elif (start_state == 11):
+        if (character == "\n"):
+            end_state = 12
+        else:
+            end_state = 11
+    elif (start_state == 13):
+        if (character == "*"):
+            end_state = 14
+        else:
+            end_state = 13
+    elif (start_state == 14):
+        if (character == "/"):
+            end_state = 12
+        elif (character == "*"):
+            end_state = 14
+        else:
+            end_state = 13
+            
+    out[1] = end_state 
+    return out        
+
+def is_keyword (ID : str):
+    KEYWORDS = ["if", "else", "void", "int", "while", "break", "switch", "default", "case", "return"]
+    if (ID in KEYWORDS):
+        return True
+    else:
+        return False    
+ 
+def get_next_token (INPUT : str, start_index : int): 
+    
+    STATE_SITUATION = ["", "", "ID", "", "NUM", "SYMBOL", "", "SYMBOL", "", "SYMBOL", "", "", "COMMENT", "", "", "WHITESPACE"]
+    STATE = 0
+    next_token = "" 
+    change_line = 0
+    
+    while (True):
+        character = INPUT[start_index]
+        next_state = get_next_state (STATE, character)  
+        STATE = next_state[1]  
+        if (character == "\n"):
+            change_line += 1
+        
+        if (next_state[0]):
+            next_token += character
+            return [next_state[1], next_token, start_index + 1, change_line]
+        
+        if (STATE_SITUATION[STATE] != ""):
+            if (STATE == 2 or STATE == 9 or STATE == 4):
+                if (STATE == 2):
+                    if (is_keyword(next_token)): 
+                        return ["KEYWORD", next_token, start_index, change_line]        
+                return [STATE_SITUATION[STATE], next_token, start_index, change_line] 
+            else:
+                next_token += character
+                return [STATE_SITUATION[STATE], next_token, start_index + 1, change_line]
+        
+        if (start_index == len(INPUT) - 1):
+            if (STATE == 10 or STATE == 11 or STATE == 13 or STATE == 14):
+                return ["Unclosed comment", next_token, start_index + 1, change_line] 
+            elif (STATE_SITUATION[STATE] == ""):
+                return ["Invalid input", next_token, start_index + 1, change_line]
+        else:
+           start_index += 1
+           STATE = next_state[1]    
+        
+        next_token += character         
+
+        
+KEYWORDS = ["if", "else", "void", "int", "while", "break", "switch", "default", "case", "return"]
+        
+file1 = open("/home/shajusahar/Desktop/input")
+inn = file1.read() 
+file1.close()
+tokens = open("/home/shajusahar/Desktop/tokens", "w")
+errors = open("/home/shajusahar/Desktop/lexical_errors", "w")  
+symbols = open("/home/shajusahar/Desktop/symbol_table", "w")
+
+for i in range(len(KEYWORDS)):
+    symbols.write(str(i + 1) + ".\t" + KEYWORDS[i] + "\n")
+
+start_index = 0
+line = 1
+error_line = 0
+symbol_table_no = 10 
+symbols_array = []
+change_line = False 
+tokens.write("1.\t")
+while (True):
+    token = get_next_token(inn, start_index)
+    start_index = token[2] 
+    
+    if (token[3] > 0 and not start_index == len(inn)): 
+        change_line = True 
+    
+    if (not (token[0] == "Invalid input" or token[0] == "Unclosed comment" or token[0] == "Invalid number" or token[0] == "Unmatched comment" or token[0] == "COMMENT" or token[0] == "WHITESPACE")):   
+        if (change_line):
+            tokens.write("\n" + str(line + token[3]) + ".\t")
+            change_line = False     
+        tokens.write("(" + token[0] + ", " + token[1] + ")" + " ")
+    elif (not (token[0] == "COMMENT" or token[0] == "WHITESPACE")): 
+        if (not (error_line == 0)):
+            errors.write("\n")
+        errors.write(str(line) + ".\t" + "(" + token[1] + ", " + token[0] + ")")
+        error_line += 1
+        
+    if (token[0] == "ID" and token[1] not in symbols_array):
+        symbols_array.append(token[1]) 
+        symbol_table_no += 1
+        symbols.write(str(symbol_table_no) + ".\t" + token[1] + "\n")
+        
+    if (start_index >= len(inn)):
+        break
+ 
+    line += token[3]        
+
+if (error_line == 0):
+    errors.write("There is no lexical error.")
+    
+tokens.close()    
+errors.close()     
+symbols.close()    
+    
+     
+    
+                 
+       
+    
+    
+
+    
