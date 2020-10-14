@@ -1,3 +1,6 @@
+#mohammad shojaeyan-97110014
+#danyal farahany-97105725
+
 import re
 
 def get_next_state (start_state : int, character : str):
