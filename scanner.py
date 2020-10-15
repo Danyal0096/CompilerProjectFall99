@@ -125,7 +125,7 @@ def get_next_token (INPUT, KEYWORDS):
             return [next_state[1], lexeme + character, change_line, False]
         elif (STATE_SITUATION[STATE] != ""):
             if (STATE == 2 or STATE == 9 or STATE == 4):
-                INPUT.seek(-1, os.SEEK_CUR)
+                INPUT.seek(-1 * i, os.SEEK_CUR)
                 if (STATE == 2):
                     if (is_keyword(KEYWORDS, lexeme)):
                         return ["KEYWORD", lexeme, change_line, False]
