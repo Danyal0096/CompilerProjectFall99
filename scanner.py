@@ -103,7 +103,15 @@ def get_next_token (INPUT, KEYWORDS):
     lexeme = ""
     
     while (True):
-        character = INPUT.read(1).decode()  
+        i = 1
+        while(True):
+            try:
+                character = INPUT.read(i).decode()
+                break
+            except:
+                INPUT.seek(-1 * i, os.SEEK_CUR) 
+                i += 1
+            
         if (character == ""): 
             break
          
@@ -155,10 +163,10 @@ ID = []
 INPUT = open("/home/shajusahar/Desktop/input.txt", "rb")
 tokens = open("/home/shajusahar/Desktop/tokens.txt", "w")
 errors = open("/home/shajusahar/Desktop/lexical_errors.txt", "w")  
-symbols = open("/home/shajusahar/Desktop/symbol_table.txt", "w") 
- 
+symbols = open("/home/shajusahar/Desktop/symbol_table.txt", "w")  
+    
 write_in_symbol_file(symbols, KEYWORDS, 1)
-
+ 
 line = 1
 exist_error = False
 change_line = False
