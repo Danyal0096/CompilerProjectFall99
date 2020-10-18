@@ -1,10 +1,12 @@
 import os
+from pathlib import Path
 
 def scan():
-    exec(open(os.path.realpath('./Compiler/scanner.py')).read())
+    hereDir = os.path.realpath(__file__)
+    scannerDir = hereDir[0:-12] + "\\scanner.py"
+    exec(open(scannerDir).read())
 
 # scan()
-# exec(open(os.path.realpath('./Compiler/scanner.py')).read()) #wtaf
-sth = os.path.dirname("compiler.py")
-sth = sth.replace("compiler","scanner")
-print(sth)
+hereDir = os.path.realpath(__file__)
+scannerDir = hereDir[0:-12] + "\\scanner.py"
+exec(open(scannerDir).read())
