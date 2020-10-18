@@ -1,6 +1,3 @@
-#mohammad shojaeyan-97110014
-#danyal farahany-97105725
-
 import re
 import os
 
