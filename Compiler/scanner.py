@@ -160,10 +160,10 @@ def format_unclosed_comment (lexeme : str):
 KEYWORDS = ["if", "else", "void", "int", "while", "break", "switch", "default", "case", "return"]
 ID = []
 
-INPUT = open("./testPyProgram/input.txt", "rb")
-tokens = open("./CompiledResult/tokens.txt", "w")
-errors = open("./CompiledResult/lexical_errors.txt", "w")  
-symbols = open("./CompiledResult/symbol_table.txt", "w")  
+INPUT = open(os.path.realpath("./testPyProgram/input.txt"), "rb")
+tokens = open(os.path.realpath("./CompiledResult/tokens.txt"), "w")
+errors = open(os.path.realpath("./CompiledResult/lexical_errors.txt"), "w")  
+symbols = open(os.path.realpath("./CompiledResult/symbol_table.txt"), "w")  
     
 write_in_symbol_file(symbols, KEYWORDS, 1)
  

@@ -1,5 +1,7 @@
+import os
+
 def scan():
-    exec(open("./Compiler/scanner.py").read())
+    exec(open(os.path.realpath('./Compiler/scanner.py')).read())
 
 # scan()
-exec(open("./Compiler/scanner.py").read()) #wtaf
+exec(open(os.path.realpath('./Compiler/scanner.py')).read()) #wtaf
