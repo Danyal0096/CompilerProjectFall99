@@ -1,5 +1,4 @@
-import os
-from pathlib import Path
+import os 
 
 def scan():
     hereDir = os.path.realpath(__file__)
