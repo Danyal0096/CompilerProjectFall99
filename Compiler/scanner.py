@@ -162,7 +162,6 @@ ID = []
 
 hereDir = os.path.realpath(__file__)
 projDir = hereDir[0:-20]
-print(projDir)
 
 INPUT = open(projDir + "\\testPyProgram\\input.txt", "rb")
 tokens = open(projDir + "\\CompiledResult\\tokens.txt", "w")
