@@ -1,0 +1,52 @@
+Program $ int void
+Declaration-list epsilon int void
+Declaration int void
+Declaration-initial int void
+Declaration-prime ( ; [
+Var-declaration-prime ; [
+Fun-declaration-prime (
+Type-specifier int void
+Params int void
+Param-list-void-abtar ID epsilon
+Param-list , epsilon
+Param int void
+Param-prime [ epsilon
+Compound-stmt {
+Statement-list epsilon { break ; if while return switch ID + - ( NUM
+Statement { break ; if while return switch ID + - ( NUM
+Expression-stmt break ; ID + - ( NUM
+Selection-stmt if
+Iteration-stmt while
+Return-stmt return
+Return-stmt-prime ; ID + - ( NUM
+Switch-stmt switch
+Case-stmts epsilon case
+Case-stmt case
+Default-stmt default epsilon
+Expression ID + - ( NUM
+B = [ ( * + - < == epsilon
+H = * epsilon + - < ==
+Simple-expression-zegond + - ( NUM
+Simple-expression-prime ( * + - < == epsilon
+C epsilon < ==
+Relop < ==
+Additive-expression + - ( ID NUM
+Additive-expression-prime ( * + - epsilon
+Additive-expression-zegond + - ( NUM
+D epsilon + -
+Addop + -
+Term + - ( ID NUM
+Term-prime ( * epsilon
+Term-zegond + - ( NUM
+G * epsilon
+Signed-factor + - ( ID NUM
+Signed-factor-prime ( epsilon
+Signed-factor-zegond + - ( NUM
+Factor ( ID NUM
+Var-call-prime ( [ epsilon
+Var-prime [ epsilon
+Factor-prime ( epsilon
+Factor-zegond ( NUM
+Args epsilon ID + - ( NUM
+Arg-list ID + - ( NUM
+Arg-list-prime , epsilon
