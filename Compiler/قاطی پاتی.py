@@ -188,6 +188,8 @@ def get_next_token_for_parser(INPUT, KEYWORDS, line : int):
 
 
 
+
+
 from anytree import Node, RenderTree
 
 def get_first(first, a: str):
@@ -295,7 +297,9 @@ while(True):
             if (exist_error):
                 errors.write("\n")
             exist_error = True
-            errors.write("#" + str(first_token[2]) + " : syntax error, missing " + str(stack.pop().name))
+            nodeeee = stack.pop()
+            errors.write("#" + str(first_token[2]) + " : syntax error, missing " + str(nodeeee.name))
+            nodeeee.parent = Node("delete")
             continue
     else:
         index_in_non_terminal = non_terminals.index(stack[-1].name)
@@ -318,7 +322,9 @@ while(True):
             if (exist_error):
                 errors.write("\n")
             exist_error = True
-            errors.write("#" + str(first_token[2]) + " : syntax error, missing " + str(stack.pop().name))
+            nodeee = stack.pop()
+            errors.write("#" + str(first_token[2]) + " : syntax error, missing " + str(nodeee.name))
+            nodeee.parent = Node("delete")
             continue
     if (first_token[0] == stack[-1].name or first_token[1] == stack[-1].name):
         stack[-1].name = "(" + first_token[0] + ", " + first_token[1] + ") "
@@ -351,7 +357,9 @@ while (True):
         if (exist_error):
             errors.write("\n")
         exist_error = True
-        errors.write("#" + str(first_token[2]+1) + " : syntax error, unexpected EOF")
+        errors.write("#" + str(first_token[2]+1) + " : Syntax Error, unexpected EOF")
+        for node in stack:
+            node.parent = Node("delete")
         break
     else:
         epsilon = Node("epsilon", stack[-1])
