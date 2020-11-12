@@ -1,18 +1,17 @@
 import re
 import os
 
-def is_keyword (KEYWORDS, ID : str):
+def is_keyword(KEYWORDS, ID: str):
     if (ID in KEYWORDS):
         return True
     else:
         return False
 
-def get_next_state (start_state : int, character : str):
-    
-    out = [False, "next_state or error type", False]  #first boolian is for error and second boolian is for lookahead
+def get_next_state(start_state: int, character: str):
+    out = [False, "next_state or error type", False]
     symbol_list = [";", ":", ",", "[", "]", "(", ")", "{", "}", "+", "-", "<"]
-    whitespace = [" ", "\n", "\t", "\r", "\f", "\v"]  
-    
+    whitespace = [" ", "\n", "\t", "\r", "\f", "\v"]
+
     if (start_state == 0):
         if (re.match('[a-zA-Z]', character)):
             out[1] = 1
@@ -36,14 +35,15 @@ def get_next_state (start_state : int, character : str):
             out[1] = 1
         elif (character not in (symbol_list + whitespace + ["=", "*", "/"])):
             out[0] = True
-            out[1] = "Invalid input" 
+            out[1] = "Invalid input"
         else:
             out[1] = 2
             out[2] = True
-    elif (start_state == 3): 
-        if (not re.match('[0-9]', character) and (character not in (symbol_list + whitespace + ["=", "*", "/"]) or re.match('[a-zA-Z]', character))):
+    elif (start_state == 3):
+        if (not re.match('[0-9]', character) and (
+                character not in (symbol_list + whitespace + ["=", "*", "/"]) or re.match('[a-zA-Z]', character))):
             out[0] = True
-            out[1] = "Invalid number" 
+            out[1] = "Invalid number"
         elif (not re.match('[0-9]', character)):
             out[1] = 4
             out[2] = True
@@ -55,11 +55,11 @@ def get_next_state (start_state : int, character : str):
             out[2] = True
         else:
             out[0] = True
-            out[1] = "Invalid input" 
+            out[1] = "Invalid input"
     elif (start_state == 8):
         if (character == "/"):
             out[0] = True
-            out[1] = "Unmatched comment" 
+            out[1] = "Unmatched comment"
         elif (character in (symbol_list + whitespace + ["=", "*", "/"]) or re.match('[a-zA-Z0-9]', character)):
             out[1] = 9
             out[2] = True
@@ -73,7 +73,7 @@ def get_next_state (start_state : int, character : str):
             out[1] = 13
         else:
             out[0] = True
-            out[1] = "Invalid input" 
+            out[1] = "Invalid input"
     elif (start_state == 11):
         if (character == "\n"):
             out[1] = 12
@@ -84,40 +84,40 @@ def get_next_state (start_state : int, character : str):
         if (character == "/"):
             out[1] = 12
         elif (not character == "*"):
-            out[1] = 13 
+            out[1] = 13
 
     if (out[1] == "next_state or error type"):
         out[1] = start_state
-        
-    return out
- 
-    
-def get_next_token (INPUT, KEYWORDS):
 
-    STATE_SITUATION = ["", "", "ID", "", "NUM", "SYMBOL", "", "SYMBOL", "", "SYMBOL", "", "", "COMMENT", "", "", "WHITESPACE"]
+    return out
+
+
+def get_next_token(INPUT, KEYWORDS):
+    STATE_SITUATION = ["", "", "ID", "", "NUM", "SYMBOL", "", "SYMBOL", "", "SYMBOL", "", "", "COMMENT", "", "",
+                       "WHITESPACE"]
     STATE = 0
     change_line = 0
     lexeme = ""
-    
+
     while (True):
         i = 1
-        while(True):
+        while (True):
             try:
                 character = INPUT.read(i).decode()
                 break
             except:
-                INPUT.seek(-1 * i, os.SEEK_CUR) 
+                INPUT.seek(-1 * i, os.SEEK_CUR)
                 i += 1
-            
-        if (character == ""): 
+
+        if (character == ""):
             break
-         
-        next_state = get_next_state(STATE, character)  
-        STATE = next_state[1] 
-        
+
+        next_state = get_next_state(STATE, character)
+        STATE = next_state[1]
+
         if (character == "\n" and not next_state[2]):
             change_line += 1
-         
+
         if (next_state[0]):
             return [next_state[1], lexeme + character, change_line, False]
         elif (STATE_SITUATION[STATE] != ""):
@@ -129,81 +129,23 @@ def get_next_token (INPUT, KEYWORDS):
                 return [STATE_SITUATION[STATE], lexeme, change_line, False]
             else:
                 return [STATE_SITUATION[STATE], lexeme + character, change_line, False]
-        
+
         lexeme += character
-        
+
     if (STATE == 10 or STATE == 11 or STATE == 13 or STATE == 14):
-        return ["Unclosed comment", lexeme, change_line, True] 
+        return ["Unclosed comment", lexeme, change_line, True]
     elif (STATE_SITUATION[STATE] == "" and not STATE == 0):
-        return ["Invalid input",lexeme, change_line,True]    
+        return ["Invalid input", lexeme, change_line, True]
     else:
-        return ["", "", -1, True]
-            
-             
-def write_in_symbol_file (symbols, array, start_line : int):
-    
-    for i in range (len(array)):
-        symbols.write(str(start_line) + ".\t" + array[i] + "\n")
-        start_line += 1                    
+        return ["", "$", -1, True]
 
-def format_unclosed_comment (lexeme : str):
-    
-    if (len(lexeme) < 8):
-        return lexeme
-    else:
-        return lexeme[0 : 7] + "..."
-    
+def get_next_token_for_parser(INPUT, KEYWORDS, line : int):
+    next_token = get_next_token(INPUT, KEYWORDS)
+    line += next_token[2]
+    while (next_token[0] == "Invalid input" or next_token[0] == "Unclosed comment" or next_token[0] == "Invalid number" or next_token[0] == "Unmatched comment" or next_token[0] == "COMMENT" or next_token[0] == "WHITESPACE"):
+        next_token = get_next_token(INPUT, KEYWORDS)
+        line += next_token[2]
 
-KEYWORDS = ["if", "else", "void", "int", "while", "break", "switch", "default", "case", "return"]
-ID = []
-
-hereDir = os.path.realpath(__file__)
-projDir = hereDir[0:-20]
-
-INPUT = open(projDir + "\\testPyProgram\\input.txt", "rb")
-tokens = open(projDir + "\\CompiledResult\\tokens.txt", "w")
-errors = open(projDir + "\\CompiledResult\\lexical_errors.txt", "w")  
-symbols = open(projDir + "\\CompiledResult\\symbol_table.txt", "w")  
-    
-write_in_symbol_file(symbols, KEYWORDS, 1)
- 
-line = 1
-exist_error = False
-change_line = False
-first_line = True
-while (True):
-    token = get_next_token(INPUT, KEYWORDS)
-    
-    if (token[3] and token[2] == -1):
-        break
-    
-    if (not (token[0] == "Invalid input" or token[0] == "Unclosed comment" or token[0] == "Invalid number" or token[0] == "Unmatched comment" or token[0] == "COMMENT" or token[0] == "WHITESPACE")):   
-        if (first_line or change_line):
-            if (not line == 1 and not first_line):
-                tokens.write("\n")
-            tokens.write(str(line) + ".\t")
-            change_line = False
-            first_line = False
-        tokens.write("(" + token[0] + ", " + token[1] + ")" + " ")
-    elif (not (token[0] == "COMMENT" or token[0] == "WHITESPACE")):
-        exist_error = True
-        if (token[0] == "Unclosed comment"):
-            token[1] = format_unclosed_comment(token[1])
-        errors.write(str(line) + ".\t" + "(" + token[1] + ", " + token[0] + ")\n")
-
-    if (token[0] == "ID" and token[1] not in ID):
-        ID.append(token[1])    
-     
-    if (token[2] > 0): 
-        line += token[2]
-        change_line = True        
-
-if (not exist_error):
-    errors.write("There is no lexical error.")
-
-write_in_symbol_file(symbols, ID, 11)
- 
-INPUT.close()
-tokens.close()    
-errors.close()     
-symbols.close()  
+    if (next_token[3] and next_token[2] == -1):
+        return ["", "$", line, True]
+    return [next_token[0], next_token[1], line]

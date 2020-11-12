@@ -3,9 +3,9 @@
 
 import os
 
-def scan():
+def parse():
     hereDir = os.path.realpath(__file__)
-    scannerDir = hereDir[0:-12] + "\\scanner.py"
+    scannerDir = hereDir[0:-12] + "\\parser.py"
     exec(open(scannerDir).read(),globals())
 
-scan()
+parse()
