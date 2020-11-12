@@ -5,7 +5,7 @@ import os
 
 def parse():
     hereDir = os.path.realpath(__file__)
-    scannerDir = hereDir[0:-12] + "\\parser.py"
+    scannerDir = hereDir[0:-12] + "/parser.py"
     exec(open(scannerDir).read(),globals())
 
 parse()

@@ -78,12 +78,12 @@ ID = []
 hereDir = os.path.realpath(__file__)
 projDir = hereDir[0:-12]
 
-INPUT = open(projDir + "\\input.txt", "rb")
-parse = open(projDir + "\\parse_tree.txt", "w", encoding='utf-8')
-errors = open(projDir + "\\syntax_errors.txt", "w", encoding='utf-8')
-grammer = open(projDir + "\\grammer.txt", "r")
-follow = open(projDir + "\\follow.txt", "r")
-first = open(projDir + "\\first.txt", "r")
+INPUT = open(projDir + "/input.txt", "rb")
+parse = open(projDir + "/parse_tree.txt", "w", encoding='utf-8')
+errors = open(projDir + "/syntax_errors.txt", "w", encoding='utf-8')
+grammer = open(projDir + "/grammer.txt", "r")
+follow = open(projDir + "/follow.txt", "r")
+first = open(projDir + "/first.txt", "r")
 
 non_terminals = ["Program", "Declaration-list", "Declaration", "Declaration-initial", "Declaration-prime",
                  "Var-declaration-prime", "Fun-declaration-prime", "Type-specifier", "Params", "Param-list-void-abtar",
